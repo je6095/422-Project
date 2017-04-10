@@ -17,7 +17,7 @@ public class EdgeConvertGUI {
    public static final String DEFINE_RELATIONS = "Define Relations";
    public static final String CANCELLED = "CANCELLED";
    private static JFileChooser jfcEdge, jfcGetClass, jfcOutputDir;
-   private static ExampleFileFilter effEdge, effSave, effClass;
+   private static ExampleFileFilter effEdge,effXml, effSave, effClass;
    private File parseFile, saveFile, outputFile, outputDir, outputDirOld;
    private String truncatedFilename;
    private String sqlString;
@@ -54,7 +54,7 @@ public class EdgeConvertGUI {
    static DefaultListModel dlmDTTablesAll, dlmDTFieldsTablesAll;
    static JMenuBar jmbDTMenuBar;
    static JMenu jmDTFile, jmDTOptions, jmDTHelp;
-   static JMenuItem jmiDTOpenEdge, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
+   static JMenuItem jmiDTOpenEdge, jmiDTOpenXml, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
    
    //Define Relations screen objects
    static JFrame jfDR;
@@ -106,6 +106,10 @@ public class EdgeConvertGUI {
       jmiDTOpenEdge = new JMenuItem("Open Edge File");
       jmiDTOpenEdge.setMnemonic(KeyEvent.VK_E);
       jmiDTOpenEdge.addActionListener(menuListener);
+      //feat: initializes jmiDTOpenXml
+      jmiDTOpenXml = new JMenuItem("Open XML File");
+      jmiDTOpenXml.setMnemonic(KeyEvent.VK_X);
+      jmiDTOpenXml.addActionListener(menuListener);
       jmiDTOpenSave = new JMenuItem("Open Save File");
       jmiDTOpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDTOpenSave.addActionListener(menuListener);
@@ -121,6 +125,7 @@ public class EdgeConvertGUI {
       jmiDTExit.setMnemonic(KeyEvent.VK_X);
       jmiDTExit.addActionListener(menuListener);
       jmDTFile.add(jmiDTOpenEdge);
+      jmDTFile.add(jmiDTOpenXml);
       jmDTFile.add(jmiDTOpenSave);
       jmDTFile.add(jmiDTSave);
       jmDTFile.add(jmiDTSaveAs);
@@ -150,6 +155,8 @@ public class EdgeConvertGUI {
       jfcEdge = new JFileChooser();
       jfcOutputDir = new JFileChooser();
 	   effEdge = new ExampleFileFilter("edg", "Edge Diagrammer Files");
+      //feat
+      effXml = new ExampleFileFilter("xml", "XML Files");
    	effSave = new ExampleFileFilter("sav", "Edge Convert Save Files");
       jfcOutputDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
@@ -1193,6 +1200,48 @@ public class EdgeConvertGUI {
             } else {
                return;
             }
+            dataSaved = true;
+         }
+         //feat
+         if ((ae.getSource() == jmiDTOpenXml)) {
+            if (!dataSaved) {
+               int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
+                                                          "Are you sure?", JOptionPane.YES_NO_OPTION);
+               if (answer != JOptionPane.YES_OPTION) {
+                  return;
+               }
+            }
+            jfcEdge.addChoosableFileFilter(effXml);
+            returnVal = jfcEdge.showOpenDialog(null);
+            /*
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+               parseFile = jfcEdge.getSelectedFile();
+               ecfp = new EdgeConvertFileParser(parseFile);
+               tables = ecfp.getEdgeTables();
+               for (int i = 0; i < tables.length; i++) {
+                  tables[i].makeArrays();
+               }
+               fields = ecfp.getEdgeFields();
+               ecfp = null;
+               populateLists();
+               saveFile = null;
+               jmiDTSave.setEnabled(false);
+               jmiDRSave.setEnabled(false);
+               jmiDTSaveAs.setEnabled(true);
+               jmiDRSaveAs.setEnabled(true);
+               jbDTDefineRelations.setEnabled(true);
+
+               jbDTCreateDDL.setEnabled(true);
+               jbDRCreateDDL.setEnabled(true);
+               
+               truncatedFilename = parseFile.getName().substring(parseFile.getName().lastIndexOf(File.separator) + 1);
+               jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
+               jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);
+               
+               
+            } else {
+               return;
+            }*/
             dataSaved = true;
          }
          
