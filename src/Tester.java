@@ -9,7 +9,7 @@ import java.io.File;
 
 /**
  *
- * @author Hypemaster
+ * @author Hassan Jegan Ndow
  */
 public class Tester {
     

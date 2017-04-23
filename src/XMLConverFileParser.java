@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author Hypemaster
+ * @author Hassan Jegan Ndow
  */
 public class XMLConverFileParser {
     
@@ -31,11 +31,13 @@ public class XMLConverFileParser {
    private File parseFile;
    private FileReader fr;
    private BufferedReader br;
-   private ArrayList <XmlTable> alTables, alFields, alConnectors;
+   private ArrayList alTables, alFields, alConnectors;
    private XmlTable[] tables;
+   private XmlField[] fields;
+   private XmlField tempField;
   
    public XMLConverFileParser(File constructorFile) {
-      alTables = new ArrayList<XmlTable>();
+      alTables = new ArrayList();
       alFields = new ArrayList();
       alConnectors = new ArrayList();
       parseFile = constructorFile;
@@ -67,7 +69,7 @@ public class XMLConverFileParser {
                 Node nNode = nList.item(temp);
                 String tableName = nNode.getAttributes().getNamedItem("name").getNodeValue();
                 alTables.add(new XmlTable(tableName));
-                System.out.println("\nCurrent Table :" + alTables.get(temp).getName());
+                System.out.println("\nCurrent Table :" + tableName);
                 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
@@ -86,6 +88,11 @@ public class XMLConverFileParser {
                             String autoIncrement = fieldNode.getAttributes().getNamedItem("auto_increment").getNodeValue();
                             String generated = fieldNode.getAttributes().getNamedItem("primary_key").getNodeValue();
                             String defaultVal = fieldNode.getAttributes().getNamedItem("default").getNodeValue();
+                            
+                            tempField = new XmlField(fieldName);
+                            tempField.setIsPrimaryKey(Boolean.parseBoolean(primaryKey));
+                            System.out.println(tempField.getIsPrimaryKey());
+                            alFields.add(tempField);
                             
                             System.out.println("\nField :" + fieldName);
                             System.out.println("\nDatatype :" + datatype);
@@ -108,4 +115,31 @@ public class XMLConverFileParser {
 	e.printStackTrace();
     }
     }
+    
+    private void makeArrays() { //convert ArrayList objects into arrays of the appropriate Class type
+      if (alTables != null) {
+         tables = (XmlTable[])alTables.toArray(new XmlTable[alTables.size()]);
+      }
+      if (alFields != null) {
+         fields = (XmlField[])alFields.toArray(new XmlField[alFields.size()]);
+      }
+   }
+    
+    private boolean isTableDup(String testTableName) {
+      for (int i = 0; i < alTables.size(); i++) {
+         XmlTable tempTable = (XmlTable)alTables.get(i);
+         if (tempTable.getName().equals(testTableName)) {
+            return true;
+         }
+      }
+      return false;
+   }
+    
+    public XmlTable[] getEdgeTables() {
+      return tables;
+   }
+   
+   public XmlField[] getEdgeFields() {
+      return fields;
+   }
 }

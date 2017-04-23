@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Hypemaster
+ * @author Hassan Jegan Ndow
  */
 public class XmlTable {
     
