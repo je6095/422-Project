@@ -97,6 +97,7 @@ public class XmlField {
       if (value > 0) {
          varcharValue = value;
       }
+      
    }
    public int getDataType() {
       return dataType;

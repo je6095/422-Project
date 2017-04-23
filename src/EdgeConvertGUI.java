@@ -368,7 +368,13 @@ public class EdgeConvertGUI {
       jcheckDTDisallowNull.addItemListener(
          new ItemListener() {
             public void itemStateChanged(ItemEvent ie) {
-               currentDTField.setDisallowNull(jcheckDTDisallowNull.isSelected());
+                if(status.equals("edge")){
+                    currentDTField.setDisallowNull(jcheckDTDisallowNull.isSelected());
+                }
+                
+                else if(status.equals("xml")){
+                    xmlCurrentDTField.setDisallowNull(jcheckDTDisallowNull.isSelected());
+                }
                dataSaved = false;
             }
          }
@@ -1204,7 +1210,17 @@ public class EdgeConvertGUI {
       public void actionPerformed(ActionEvent ae) {
          for (int i = 0; i < jrbDataType.length; i++) {
             if (jrbDataType[i].isSelected()) {
-               currentDTField.setDataType(i);
+                
+                //refac
+                
+               if(status.equals("edge")){
+                    currentDTField.setDataType(i);
+                } 
+               
+               else if(status.equals("xml")){
+                    xmlCurrentDTField.setDataType(i);
+                } 
+               
                break;
             }
          }
@@ -1216,7 +1232,14 @@ public class EdgeConvertGUI {
             jbDTVarchar.setEnabled(false);
          }
          jtfDTDefaultValue.setText("");
-         currentDTField.setDefaultValue("");
+         if(status.equals("edge")){
+                    currentDTField.setDefaultValue("");
+         } 
+         
+         else if(status.equals("xml")){
+                    xmlCurrentDTField.setDefaultValue("");
+         } 
+         
          dataSaved = false;
       }
    }

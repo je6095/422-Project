@@ -89,8 +89,9 @@ public class XmlConvertFileParser {
                             int tableId = Integer.parseInt(fieldNode.getAttributes().getNamedItem("tableId").getNodeValue());
                             int fieldId = Integer.parseInt(fieldNode.getAttributes().getNamedItem("fieldId").getNodeValue());
                             String datatype = fieldNode.getAttributes().getNamedItem("datatype").getNodeValue();
+                            int varcharVal = Integer.parseInt(fieldNode.getAttributes().getNamedItem("varchar_val").getNodeValue());
                             String primaryKey = fieldNode.getAttributes().getNamedItem("primary_key").getNodeValue();
-                            String notNull = fieldNode.getAttributes().getNamedItem("not_null").getNodeValue();
+                            boolean notNull = Boolean.parseBoolean(fieldNode.getAttributes().getNamedItem("not_null").getNodeValue());
                             String unsigned = fieldNode.getAttributes().getNamedItem("unsigned").getNodeValue();
                             String binary = fieldNode.getAttributes().getNamedItem("binary").getNodeValue();
                             String autoIncrement = fieldNode.getAttributes().getNamedItem("auto_increment").getNodeValue();
@@ -99,6 +100,10 @@ public class XmlConvertFileParser {
                             
                             tempField = new XmlField(fieldName, fieldId);
                             tempField.setIsPrimaryKey(Boolean.parseBoolean(primaryKey));
+                            tempField.setDataType(Integer.parseInt(datatype));
+                            tempField.setDefaultValue(defaultVal);
+                            tempField.setDisallowNull(notNull);
+                            tempField.setVarcharValue(varcharVal);
                             System.out.println(tempField.getIsPrimaryKey());
                             alFields.add(tempField);
                             xmlTable.addNativeField(fieldId);
