@@ -72,7 +72,7 @@ public class EdgeConvertGUI {
    static DefaultListModel dlmDTTablesAll, dlmDTFieldsTablesAll;
    static JMenuBar jmbDTMenuBar;
    static JMenu jmDTFile, jmDTOptions, jmDTHelp;
-   static JMenuItem jmiDTOpenEdge, jmiDTOpenXml, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout; //refac
+   static JMenuItem jmiDTOpenEdge, jmiDTOpenXml, jmiDTOpenSave, jmiDTOpenSaveXml, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout; //refac
    
    //Define Relations screen objects
    static JFrame jfDR;
@@ -132,6 +132,9 @@ public class EdgeConvertGUI {
       jmiDTOpenSave = new JMenuItem("Open Save File");
       jmiDTOpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDTOpenSave.addActionListener(menuListener);
+      jmiDTOpenSaveXml = new JMenuItem("Open XML Save File"); //refac
+      jmiDTOpenSaveXml.setMnemonic(KeyEvent.VK_Y); //refac
+      jmiDTOpenSaveXml.addActionListener(menuListener); //refac
       jmiDTSave = new JMenuItem("Save");
       jmiDTSave.setMnemonic(KeyEvent.VK_S);
       jmiDTSave.setEnabled(false);
@@ -146,6 +149,7 @@ public class EdgeConvertGUI {
       jmDTFile.add(jmiDTOpenEdge);
       jmDTFile.add(jmiDTOpenXml); //refac
       jmDTFile.add(jmiDTOpenSave);
+      jmDTFile.add(jmiDTOpenSaveXml);
       jmDTFile.add(jmiDTSave);
       jmDTFile.add(jmiDTSaveAs);
       jmDTFile.add(jmiDTExit);
@@ -1007,10 +1011,7 @@ public class EdgeConvertGUI {
          for (int tIndex = 0; tIndex < xmlTables.length; tIndex++) {
             String tempName = xmlTables[tIndex].getName();
             dlmDTTablesAll.addElement(tempName);
-            int[] relatedTables = xmlTables[tIndex].getRelatedTablesArray();
-            if (relatedTables.length > 0) {
-               dlmDRTablesRelations.addElement(tempName);
-            }
+            
          }
       }
       readSuccess = true;
@@ -1522,6 +1523,48 @@ public class EdgeConvertGUI {
             dataSaved = true;
          }
          
+         if ((ae.getSource() == jmiDTOpenSaveXml)) {
+            if (!dataSaved) {
+               int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
+                                                          "Are you sure?", JOptionPane.YES_NO_OPTION);
+               if (answer != JOptionPane.YES_OPTION) {
+                  return;
+               }
+            }
+            
+            status = "xml";
+            System.out.println(status);
+            jfcXml.addChoosableFileFilter(effSave);
+            returnVal = jfcXml.showOpenDialog(null);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+               saveFile = jfcXml.getSelectedFile();
+               xcfp = new XmlConvertFileParser(saveFile);
+               xmlTables = xcfp.getEdgeTables();
+               xmlFields = xcfp.getEdgeFields();
+               for (int i = 0; i < xmlTables.length; i++) {
+                  xmlTables[i].makeArrays();
+               }
+               xcfp = null;
+               populateXmlLists();
+               parseFile = null;
+               jmiDTSave.setEnabled(true);
+               jmiDRSave.setEnabled(true);
+               jmiDTSaveAs.setEnabled(true);
+               jmiDRSaveAs.setEnabled(true);
+               jbDTDefineRelations.setEnabled(true);
+
+               jbDTCreateDDL.setEnabled(true);
+               jbDRCreateDDL.setEnabled(true);
+
+               truncatedFilename = saveFile.getName().substring(saveFile.getName().lastIndexOf(File.separator) + 1);
+               jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
+               jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);
+            } else {
+               return;
+            }
+            dataSaved = true;
+         }
+         
          if ((ae.getSource() == jmiDTOpenSave) || (ae.getSource() == jmiDROpenSave)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
@@ -1530,6 +1573,8 @@ public class EdgeConvertGUI {
                   return;
                }
             }
+            status = "edge";
+            System.out.println(status);
             jfcEdge.addChoosableFileFilter(effSave);
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
