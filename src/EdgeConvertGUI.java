@@ -1,6 +1,5 @@
-import edgeconvert.XmlConvertFileParser;
-import edgeconvert.XmlTable;
-import edgeconvert.XmlField;
+
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -1229,8 +1228,10 @@ public class EdgeConvertGUI {
       File[] resultFiles;
       Class resultClass = null;
       Class[] paramTypes = {EdgeTable[].class, EdgeField[].class};
+      Class[] paramTypesXml = {XmlTable[].class, XmlField[].class};
       Class[] paramTypesNull = {};
       Constructor conResultClass;
+      Object[] argsXml = {xmlTables, xmlFields};
       Object[] args = {tables, fields};
       Object objOutput = null;
 
@@ -1244,7 +1245,7 @@ public class EdgeConvertGUI {
                continue; //ignore all files that are not .class files
             }
             resultClass = Class.forName(resultFiles[i].getName().substring(0, resultFiles[i].getName().lastIndexOf(".")));
-            if (resultClass.getSuperclass().getName().equals("EdgeConvertCreateDDL")) { //only interested in classes that extend EdgeConvertCreateDDL
+            if (resultClass.getSuperclass().getName().equals("EdgeConvertCreateDDL") && status.equals("edge")) { //only interested in classes that extend EdgeConvertCreateDDL
                if (parseFile == null && saveFile == null) {
                   conResultClass = resultClass.getConstructor(paramTypesNull);
                   } else {
@@ -1256,6 +1257,21 @@ public class EdgeConvertGUI {
                String productName = (String)getProductName.invoke(objOutput, null);
                alProductNames.add(productName);
             }
+            
+            if (resultClass.getSuperclass().getName().equals("XmlConvertCreateDDL") && status.equals("xml")) { //only interested in classes that extend EdgeConvertCreateDDL
+               if (parseFile == null && saveFile == null) {
+                  conResultClass = resultClass.getConstructor(paramTypesNull);
+                  } else {
+                  conResultClass = resultClass.getConstructor(paramTypesXml);
+                  objOutput = conResultClass.newInstance(argsXml);
+               }
+               alSubclasses.add(objOutput);
+               Method getProductName = resultClass.getMethod("getProductName", null);
+               String productName = (String)getProductName.invoke(objOutput, null);
+               alProductNames.add(productName);
+            }
+            
+    
          }
       } catch (InstantiationException ie) {
          ie.printStackTrace();
@@ -1314,7 +1330,9 @@ public class EdgeConvertGUI {
    }
 
    private void writeSQL(String output) {
-      jfcEdge.resetChoosableFileFilters();
+      if(status.equals("edge")){jfcEdge.resetChoosableFileFilters();}
+      if(status.equals("xml")){jfcXml.resetChoosableFileFilters();}
+      
       String str;
       if (parseFile != null) {
          outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
@@ -1324,10 +1342,17 @@ public class EdgeConvertGUI {
       if (databaseName.equals("")) {
          return;
       }
-      jfcEdge.setSelectedFile(outputFile);
-      int returnVal = jfcEdge.showSaveDialog(null);
+      if(status.equals("edge")){jfcEdge.setSelectedFile(outputFile);}
+      if(status.equals("xml")){jfcXml.setSelectedFile(outputFile);}
+      
+      int returnVal = 0;
+      if(status.equals("edge")){returnVal = jfcEdge.showSaveDialog(null);}
+      if(status.equals("xml")){returnVal = jfcXml.showSaveDialog(null);}
+      
       if (returnVal == JFileChooser.APPROVE_OPTION) {
-         outputFile = jfcEdge.getSelectedFile();
+         if(status.equals("edge")){outputFile = jfcEdge.getSelectedFile();}
+         if(status.equals("xml")){outputFile = jfcXml.getSelectedFile();}
+         
          if (outputFile.exists ()) {
              int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite",
                                                          JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);

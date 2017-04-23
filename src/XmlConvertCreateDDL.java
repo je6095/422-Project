@@ -1,28 +1,33 @@
 
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.io.*;
-import java.util.*;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-public abstract class EdgeConvertCreateDDL {
-   static String[] products = {"MySQL"};
-   protected EdgeTable[] tables; //master copy of EdgeTable objects
-   protected EdgeField[] fields; //master copy of EdgeField objects
+/**
+ *
+ * @author Hassan Jegan Ndow
+ */
+public abstract class XmlConvertCreateDDL {
+   
+   static String[] products = {"XML MySQL"};
+   protected XmlTable[] tables;
+   protected XmlField[] fields; 
    protected int[] numBoundTables;
    protected int maxBound;
    protected StringBuffer sb;
    protected int selected;
    
-   public EdgeConvertCreateDDL(EdgeTable[] tables, EdgeField[] fields) {
+   public XmlConvertCreateDDL(XmlTable[] tables, XmlField[] fields) {
       this.tables = tables;
       this.fields = fields;
-      initialize();
+      numBoundTables = new int[tables.length];
+      //initialize();
    } //EdgeConvertCreateDDL(EdgeTable[], EdgeField[])
    
-   public EdgeConvertCreateDDL() { //default constructor with empty arg list for to allow output dir to be set before there are table and field objects
+   public XmlConvertCreateDDL() { //default constructor with empty arg list for to allow output dir to be set before there are table and field objects
       
    } //EdgeConvertCreateDDL()
 
@@ -46,7 +51,7 @@ public abstract class EdgeConvertCreateDDL {
       }
    }
    
-   protected EdgeTable getTable(int numFigure) {
+   protected XmlTable getTable(int numFigure) {
       for (int tIndex = 0; tIndex < tables.length; tIndex++) {
          if (numFigure == tables[tIndex].getNumFigure()) {
             return tables[tIndex];
@@ -55,7 +60,7 @@ public abstract class EdgeConvertCreateDDL {
       return null;
    }
    
-   protected EdgeField getField(int numFigure) {
+   protected XmlField getField(int numFigure) {
       for (int fIndex = 0; fIndex < fields.length; fIndex++) {
          if (numFigure == fields[fIndex].getNumFigure()) {
             return fields[fIndex];
@@ -71,5 +76,5 @@ public abstract class EdgeConvertCreateDDL {
    public abstract String getSQLString();
    
    public abstract void createDDL();
-   
-}//EdgeConvertCreateDDL
+    
+}

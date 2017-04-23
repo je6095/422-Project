@@ -1,9 +1,11 @@
+
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edgeconvert;
+
 
 import java.util.ArrayList;
 
@@ -109,21 +111,21 @@ public class XmlTable {
       for (int i = 0; i < nativeFields.length; i++) {
          sb.append(nativeFields[i]);
          if (i < (nativeFields.length - 1)){
-            sb.append(EdgeConvertFileParser.DELIM);
+            //sb.append(EdgeConvertFileParser.DELIM);
          }
       }
       sb.append("\r\nRelatedTables: ");
       for (int i = 0; i < relatedTables.length; i++) {
          sb.append(relatedTables[i]);
          if (i < (relatedTables.length - 1)){
-            sb.append(EdgeConvertFileParser.DELIM);
+            //sb.append(EdgeConvertFileParser.DELIM);
          }
       }
       sb.append("\r\nRelatedFields: ");
       for (int i = 0; i < relatedFields.length; i++) {
          sb.append(relatedFields[i]);
          if (i < (relatedFields.length - 1)){
-            sb.append(EdgeConvertFileParser.DELIM);
+            //sb.append(EdgeConvertFileParser.DELIM);
          }
       }
       sb.append("\r\n}\r\n");

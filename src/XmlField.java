@@ -1,10 +1,10 @@
+
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edgeconvert;
-
 import java.util.StringTokenizer;
 
 /**
@@ -114,14 +114,6 @@ public class XmlField {
    }
    
    public String toString() {
-      return name + EdgeConvertFileParser.DELIM +
-      tableID + EdgeConvertFileParser.DELIM +
-      tableBound + EdgeConvertFileParser.DELIM +
-      fieldBound + EdgeConvertFileParser.DELIM +
-      dataType + EdgeConvertFileParser.DELIM +
-      varcharValue + EdgeConvertFileParser.DELIM +
-      isPrimaryKey + EdgeConvertFileParser.DELIM +
-      disallowNull + EdgeConvertFileParser.DELIM +
-      defaultValue;
+      return name;
    }
 }
