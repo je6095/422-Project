@@ -1,3 +1,6 @@
+import edgeconvert.XmlConvertFileParser;
+import edgeconvert.XmlTable;
+import edgeconvert.XmlField;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -9,6 +12,7 @@ import java.lang.reflect.*;
 
 public class EdgeConvertGUI {
    
+   public String status; 
    public static final int HORIZ_SIZE = 635;
    public static final int VERT_SIZE = 400;
    public static final int HORIZ_LOC = 100;
@@ -16,7 +20,7 @@ public class EdgeConvertGUI {
    public static final String DEFINE_TABLES = "Define Tables";
    public static final String DEFINE_RELATIONS = "Define Relations";
    public static final String CANCELLED = "CANCELLED";
-   private static JFileChooser jfcEdge, jfcGetClass, jfcOutputDir;
+   private static JFileChooser jfcEdge, jfcXml, jfcGetClass, jfcOutputDir; //refac
    private static ExampleFileFilter effEdge,effXml, effSave, effClass;
    private File parseFile, saveFile, outputFile, outputDir, outputDirOld;
    private String truncatedFilename;
@@ -27,12 +31,17 @@ public class EdgeConvertGUI {
    EdgeWindowListener edgeWindowListener;
    CreateDDLButtonListener createDDLListener;
    private EdgeConvertFileParser ecfp;
+   private XmlConvertFileParser xcfp; //refac
    private EdgeConvertCreateDDL eccd;
    private static PrintWriter pw;
    private EdgeTable[] tables; //master copy of EdgeTable objects
    private EdgeField[] fields; //master copy of EdgeField objects
+   private XmlTable[] xmlTables; //refac
+   private XmlField[] xmlFields; //refac
    private EdgeTable currentDTTable, currentDRTable1, currentDRTable2; //pointers to currently selected table(s) on Define Tables (DT) and Define Relations (DR) screens
    private EdgeField currentDTField, currentDRField1, currentDRField2; //pointers to currently selected field(s) on Define Tables (DT) and Define Relations (DR) screens
+   private XmlTable xmlCurrentDTTable, xmlCurrentDRTable1, xmlCurrentDRTable2; //refac
+   private XmlField xmlCurrentDTField, xmlCurrentDRField1, xmlCurrentDRField2; //refac
    private static boolean readSuccess = true; //this tells GUI whether to populate JList components or not
    private boolean dataSaved = true;
    private ArrayList alSubclasses, alProductNames;
@@ -54,7 +63,7 @@ public class EdgeConvertGUI {
    static DefaultListModel dlmDTTablesAll, dlmDTFieldsTablesAll;
    static JMenuBar jmbDTMenuBar;
    static JMenu jmDTFile, jmDTOptions, jmDTHelp;
-   static JMenuItem jmiDTOpenEdge, jmiDTOpenXml, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
+   static JMenuItem jmiDTOpenEdge, jmiDTOpenXml, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout; //refac
    
    //Define Relations screen objects
    static JFrame jfDR;
@@ -73,6 +82,7 @@ public class EdgeConvertGUI {
       radioListener = new EdgeRadioButtonListener();
       edgeWindowListener = new EdgeWindowListener();
       createDDLListener = new CreateDDLButtonListener();
+      status = "";
       this.showGUI();
    } // EdgeConvertGUI.EdgeConvertGUI()
    
@@ -107,9 +117,9 @@ public class EdgeConvertGUI {
       jmiDTOpenEdge.setMnemonic(KeyEvent.VK_E);
       jmiDTOpenEdge.addActionListener(menuListener);
       //feat: initializes jmiDTOpenXml
-      jmiDTOpenXml = new JMenuItem("Open XML File");
-      jmiDTOpenXml.setMnemonic(KeyEvent.VK_X);
-      jmiDTOpenXml.addActionListener(menuListener);
+      jmiDTOpenXml = new JMenuItem("Open XML File"); //refac
+      jmiDTOpenXml.setMnemonic(KeyEvent.VK_X); //refac
+      jmiDTOpenXml.addActionListener(menuListener); //refac
       jmiDTOpenSave = new JMenuItem("Open Save File");
       jmiDTOpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDTOpenSave.addActionListener(menuListener);
@@ -125,7 +135,7 @@ public class EdgeConvertGUI {
       jmiDTExit.setMnemonic(KeyEvent.VK_X);
       jmiDTExit.addActionListener(menuListener);
       jmDTFile.add(jmiDTOpenEdge);
-      jmDTFile.add(jmiDTOpenXml);
+      jmDTFile.add(jmiDTOpenXml); //refac
       jmDTFile.add(jmiDTOpenSave);
       jmDTFile.add(jmiDTSave);
       jmDTFile.add(jmiDTSaveAs);
@@ -153,11 +163,11 @@ public class EdgeConvertGUI {
       jmDTHelp.add(jmiDTHelpAbout);
       
       jfcEdge = new JFileChooser();
+      jfcXml = new JFileChooser();
       jfcOutputDir = new JFileChooser();
-	   effEdge = new ExampleFileFilter("edg", "Edge Diagrammer Files");
-      //feat
-      effXml = new ExampleFileFilter("xml", "XML Files");
-   	effSave = new ExampleFileFilter("sav", "Edge Convert Save Files");
+      effEdge = new ExampleFileFilter("edg", "Edge Diagrammer Files");
+      effXml = new ExampleFileFilter("xml", "XML Files"); //refac
+      effSave = new ExampleFileFilter("sav", "Edge Convert Save Files");
       jfcOutputDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
       jpDTBottom = new JPanel(new GridLayout(1, 2));
@@ -194,13 +204,32 @@ public class EdgeConvertGUI {
                if (selIndex >= 0) {
                   String selText = dlmDTTablesAll.getElementAt(selIndex).toString();
                   setCurrentDTTable(selText); //set pointer to the selected table
-                  int[] currentNativeFields = currentDTTable.getNativeFieldsArray();
+                  
+                  //refac
+                  int[] currentNativeFields = null;
+                  
+                  if(status.equals("edge")){
+                     currentNativeFields = currentDTTable.getNativeFieldsArray();
+                  }
+                  
+                  if(status.equals("xml")){
+                     currentNativeFields = xmlCurrentDTTable.getNativeFieldsArray();
+                  }
+                  
                   jlDTFieldsTablesAll.clearSelection();
                   dlmDTFieldsTablesAll.removeAllElements();
                   jbDTMoveUp.setEnabled(false);
                   jbDTMoveDown.setEnabled(false);
                   for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
-                     dlmDTFieldsTablesAll.addElement(getFieldName(currentNativeFields[fIndex]));
+                
+                     if(status.equals("edge")){ 
+                        dlmDTFieldsTablesAll.addElement(getFieldName(currentNativeFields[fIndex]));
+                     }
+                     
+                     else if(status.equals("xml")){ 
+                        dlmDTFieldsTablesAll.addElement(getXmlFieldName(currentNativeFields[fIndex]));
+                     }
+                     
                   }
                }
                disableControls();
@@ -228,7 +257,12 @@ public class EdgeConvertGUI {
                   String selText = dlmDTFieldsTablesAll.getElementAt(selIndex).toString();
                   setCurrentDTField(selText); //set pointer to the selected field
                   enableControls();
-                  jrbDataType[currentDTField.getDataType()].setSelected(true); //select the appropriate radio button, based on value of dataType
+                  if(status.equals("edge")){
+                    jrbDataType[currentDTField.getDataType()].setSelected(true); //select the appropriate radio button, based on value of dataType
+                  }
+                  else if(status.equals("xml")){
+                    jrbDataType[xmlCurrentDTField.getDataType()].setSelected(true); //select the appropriate radio button, based on value of dataType
+                  }
                   if (jrbDataType[0].isSelected()) { //this is the Varchar radio button
                      jbDTVarchar.setEnabled(true); //enable the Varchar button
                      jtfDTVarchar.setText(Integer.toString(currentDTField.getVarcharValue())); //fill text field with varcharValue
@@ -236,9 +270,18 @@ public class EdgeConvertGUI {
                      jtfDTVarchar.setText(""); //clear the text field
                      jbDTVarchar.setEnabled(false); //disable the button
                   }
-                  jcheckDTPrimaryKey.setSelected(currentDTField.getIsPrimaryKey()); //clear or set Primary Key checkbox
-                  jcheckDTDisallowNull.setSelected(currentDTField.getDisallowNull()); //clear or set Disallow Null checkbox
-                  jtfDTDefaultValue.setText(currentDTField.getDefaultValue()); //fill text field with defaultValue
+                  
+                  if(status.equals("edge")){
+                    jcheckDTPrimaryKey.setSelected(currentDTField.getIsPrimaryKey()); //clear or set Primary Key checkbox
+                    jcheckDTDisallowNull.setSelected(currentDTField.getDisallowNull()); //clear or set Disallow Null checkbox
+                    jtfDTDefaultValue.setText(currentDTField.getDefaultValue()); //fill text field with defaultValue
+                  }
+                  
+                  else if(status.equals("xml")){
+                    jcheckDTPrimaryKey.setSelected(xmlCurrentDTField.getIsPrimaryKey()); //clear or set Primary Key checkbox
+                    jcheckDTDisallowNull.setSelected(xmlCurrentDTField.getDisallowNull()); //clear or set Disallow Null checkbox
+                    jtfDTDefaultValue.setText(xmlCurrentDTField.getDefaultValue()); //fill text field with defaultValue
+                  }
                }
             }
          }
@@ -740,21 +783,45 @@ public class EdgeConvertGUI {
    }
    
    private void setCurrentDTTable(String selText) {
-      for (int tIndex = 0; tIndex < tables.length; tIndex++) {
-         if (selText.equals(tables[tIndex].getName())) {
-            currentDTTable = tables[tIndex];
-            return;
-         }
-      }
+       //refac
+        if(status.equals("edge")){
+            for (int tIndex = 0; tIndex < tables.length; tIndex++) {
+                if (selText.equals(tables[tIndex].getName())) {
+                    currentDTTable = tables[tIndex];
+                    return;
+                }
+            }
+       }
+        
+        else if(status.equals("xml")){
+            for (int tIndex = 0; tIndex < xmlTables.length; tIndex++) {
+                if (selText.equals(xmlTables[tIndex].getName())) {
+                    xmlCurrentDTTable = xmlTables[tIndex];
+                    return;
+                }
+            }
+       }
    }
 
    private void setCurrentDTField(String selText) {
-      for (int fIndex = 0; fIndex < fields.length; fIndex++) {
-         if (selText.equals(fields[fIndex].getName()) && fields[fIndex].getTableID() == currentDTTable.getNumFigure()) {
-            currentDTField = fields[fIndex];
-            return;
-         }
-      }
+      //refac
+        if(status.equals("edge")){  
+            for (int fIndex = 0; fIndex < fields.length; fIndex++) {
+               if (selText.equals(fields[fIndex].getName()) && fields[fIndex].getTableID() == currentDTTable.getNumFigure()) {
+                  currentDTField = fields[fIndex];
+                  return;
+               }
+            }
+        }
+        
+        else if(status.equals("xml")){  
+            for (int fIndex = 0; fIndex < xmlFields.length; fIndex++) {
+               if (selText.equals(xmlFields[fIndex].getName())) {
+                  xmlCurrentDTField = xmlFields[fIndex];
+                  return;
+               }
+            }
+        }
    }
 
    private void setCurrentDRTable1(String selText) {
@@ -813,6 +880,18 @@ public class EdgeConvertGUI {
       return "";
    }
    
+   //refac
+   private String getXmlFieldName(int numFigure) {
+      
+         for (int fIndex = 0; fIndex < xmlFields.length; fIndex++) {
+         if (xmlFields[fIndex].getNumFigure() == numFigure) {
+            return xmlFields[fIndex].getName();
+         }
+      }
+      return "";
+     
+   }
+   
    private void enableControls() {
       for (int i = 0; i < strDataType.length; i++) {
          jrbDataType[i].setEnabled(true);
@@ -865,6 +944,25 @@ public class EdgeConvertGUI {
             String tempName = tables[tIndex].getName();
             dlmDTTablesAll.addElement(tempName);
             int[] relatedTables = tables[tIndex].getRelatedTablesArray();
+            if (relatedTables.length > 0) {
+               dlmDRTablesRelations.addElement(tempName);
+            }
+         }
+      }
+      readSuccess = true;
+   }
+   
+   //refac
+   private void populateXmlLists() {
+      if (readSuccess) {
+         jfDT.setVisible(true);
+         jfDR.setVisible(false);
+         disableControls();
+         depopulateLists();
+         for (int tIndex = 0; tIndex < xmlTables.length; tIndex++) {
+            String tempName = xmlTables[tIndex].getName();
+            dlmDTTablesAll.addElement(tempName);
+            int[] relatedTables = xmlTables[tIndex].getRelatedTablesArray();
             if (relatedTables.length > 0) {
                dlmDRTablesRelations.addElement(tempName);
             }
@@ -1172,6 +1270,9 @@ public class EdgeConvertGUI {
                   return;
                }
             }
+            status = "edge";
+            System.out.println(status);
+            
             jfcEdge.addChoosableFileFilter(effEdge);
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -1211,19 +1312,21 @@ public class EdgeConvertGUI {
                   return;
                }
             }
-            jfcEdge.addChoosableFileFilter(effXml);
-            returnVal = jfcEdge.showOpenDialog(null);
-            /*
+            
+            status = "xml";
+            System.out.println(status);
+            jfcXml.addChoosableFileFilter(effXml);
+            returnVal = jfcXml.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-               parseFile = jfcEdge.getSelectedFile();
-               ecfp = new EdgeConvertFileParser(parseFile);
-               tables = ecfp.getEdgeTables();
-               for (int i = 0; i < tables.length; i++) {
-                  tables[i].makeArrays();
+               parseFile = jfcXml.getSelectedFile();
+               xcfp = new XmlConvertFileParser(parseFile);
+               xmlTables = xcfp.getEdgeTables();
+               for (int i = 0; i < xmlTables.length; i++) {
+                  xmlTables[i].makeArrays();
                }
-               fields = ecfp.getEdgeFields();
-               ecfp = null;
-               populateLists();
+               xmlFields = xcfp.getEdgeFields();
+               xcfp = null;
+               populateXmlLists();
                saveFile = null;
                jmiDTSave.setEnabled(false);
                jmiDRSave.setEnabled(false);
@@ -1237,11 +1340,9 @@ public class EdgeConvertGUI {
                truncatedFilename = parseFile.getName().substring(parseFile.getName().lastIndexOf(File.separator) + 1);
                jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
                jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);
-               
-               
             } else {
                return;
-            }*/
+            }
             dataSaved = true;
          }
          
@@ -1321,7 +1422,7 @@ public class EdgeConvertGUI {
          if ((ae.getSource() == jmiDTHelpAbout) || (ae.getSource() == jmiDRHelpAbout)) {
             JOptionPane.showMessageDialog(null, "EdgeConvert ERD To DDL Conversion Tool\n" +
                                                 "by Stephen A. Capperell\n" +
-                                                "© 2007-2008");
+                                                "ï¿½ 2007-2008");
          }
       } // EdgeMenuListener.actionPerformed()
    } // EdgeMenuListener

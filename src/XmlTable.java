@@ -14,14 +14,20 @@ import java.util.ArrayList;
 public class XmlTable {
     
     private String name;
+    private int numFigure;
     private ArrayList alRelatedTables, alNativeFields;
     private int[] relatedTables, relatedFields, nativeFields;
     
-    public XmlTable(String name) {
-      
+    public XmlTable(String name, int id) {
+      numFigure = id;
       this.name = name;
       alRelatedTables = new ArrayList();
       alNativeFields = new ArrayList();
+   }
+    
+    
+    public int getNumFigure() {
+      return numFigure;
    }
     
     public String getName() {

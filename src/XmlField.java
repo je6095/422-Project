@@ -12,14 +12,16 @@ import java.util.StringTokenizer;
  * @author Hassan Jegan Ndow
  */
 public class XmlField {
+   private int numFigure;
    private int tableID, tableBound, fieldBound, dataType, varcharValue;
    private String name, defaultValue;
    private boolean disallowNull, isPrimaryKey;
    private static String[] strDataType = {"Varchar", "Boolean", "Integer", "Double"};
    public static final int VARCHAR_DEFAULT_LENGTH = 1;
    
-   public XmlField(String name) {
+   public XmlField(String name, int id) {
       this.name = name;
+      numFigure = id;
       tableID = 0;
       tableBound = 0;
       fieldBound = 0;
@@ -30,6 +32,10 @@ public class XmlField {
       dataType = 0;
    }
    
+   
+   public int getNumFigure() {
+      return numFigure;
+   }
    
    public String getName() {
       return name;

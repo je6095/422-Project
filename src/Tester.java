@@ -17,7 +17,7 @@ public class Tester {
         
         File file = new File("testXml.xml");
         
-        XMLConverFileParser xml = new XMLConverFileParser(file);
+        XmlConvertFileParser xml = new XmlConvertFileParser(file);
     }
     
 }
