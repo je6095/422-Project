@@ -300,13 +300,19 @@ public class EdgeConvertGUI {
          new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                int selection = jlDTFieldsTablesAll.getSelectedIndex();
-               currentDTTable.moveFieldUp(selection);
+               if (status.equals("edge")){currentDTTable.moveFieldUp(selection);}
+               else if (status.equals("xml")){xmlCurrentDTTable.moveFieldUp(selection);}
                //repopulate Fields List
-               int[] currentNativeFields = currentDTTable.getNativeFieldsArray();
+               int[] currentNativeFields = null;
+               
+               if (status.equals("edge")){ currentNativeFields = currentDTTable.getNativeFieldsArray();}
+               else if (status.equals("xml")){ currentNativeFields = xmlCurrentDTTable.getNativeFieldsArray();}
+               
                jlDTFieldsTablesAll.clearSelection();
                dlmDTFieldsTablesAll.removeAllElements();
                for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
-                  dlmDTFieldsTablesAll.addElement(getFieldName(currentNativeFields[fIndex]));
+                  if (status.equals("edge")){dlmDTFieldsTablesAll.addElement(getFieldName(currentNativeFields[fIndex]));}
+                  if (status.equals("xml")){dlmDTFieldsTablesAll.addElement(getXmlFieldName(currentNativeFields[fIndex]));}
                }
                jlDTFieldsTablesAll.setSelectedIndex(selection - 1);
                dataSaved = false;
@@ -319,13 +325,20 @@ public class EdgeConvertGUI {
          new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                int selection = jlDTFieldsTablesAll.getSelectedIndex(); //the original selected index
-               currentDTTable.moveFieldDown(selection);
+               if (status.equals("edge")){currentDTTable.moveFieldDown(selection);}
+               else if (status.equals("xml")){xmlCurrentDTTable.moveFieldDown(selection);}
                //repopulate Fields List
-               int[] currentNativeFields = currentDTTable.getNativeFieldsArray();
+               
+               int[] currentNativeFields = null;
+               
+               if (status.equals("edge")){ currentNativeFields = currentDTTable.getNativeFieldsArray();}
+               else if (status.equals("xml")){ currentNativeFields = xmlCurrentDTTable.getNativeFieldsArray();}
+
                jlDTFieldsTablesAll.clearSelection();
                dlmDTFieldsTablesAll.removeAllElements();
                for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
-                  dlmDTFieldsTablesAll.addElement(getFieldName(currentNativeFields[fIndex]));
+                  if (status.equals("edge")){dlmDTFieldsTablesAll.addElement(getFieldName(currentNativeFields[fIndex]));}
+                  else if (status.equals("xml")){dlmDTFieldsTablesAll.addElement(getXmlFieldName(currentNativeFields[fIndex]));}
                }
                jlDTFieldsTablesAll.setSelectedIndex(selection + 1);
                dataSaved = false;
