@@ -418,7 +418,9 @@ public class EdgeConvertGUI {
             public void actionPerformed(ActionEvent ae) {
                String prev = jtfDTDefaultValue.getText();
                boolean goodData = false;
-               int i = currentDTField.getDataType();
+               int i = 0;
+               if(status.equals("edge")){i = currentDTField.getDataType();}
+               else if(status.equals("xml")){i = xmlCurrentDTField.getDataType();}
                do {
                   String result = (String)JOptionPane.showInputDialog(
                        null,
@@ -484,7 +486,8 @@ public class EdgeConvertGUI {
                if (selIndex >= 0) {
                   String selText = dlmDTFieldsTablesAll.getElementAt(selIndex).toString();
                   setCurrentDTField(selText);
-                  currentDTField.setDefaultValue(jtfDTDefaultValue.getText());
+                  if(status.equals("edge")){currentDTField.setDefaultValue(jtfDTDefaultValue.getText());}
+                  else if(status.equals("xml")){xmlCurrentDTField.setDefaultValue(jtfDTDefaultValue.getText());}
                }
                dataSaved = false;
             }
@@ -522,7 +525,8 @@ public class EdgeConvertGUI {
                   varchar = Integer.parseInt(result);
                   if (varchar > 0 && varchar <= 65535) { // max length of varchar is 255 before v5.0.3
                      jtfDTVarchar.setText(Integer.toString(varchar));
-                     currentDTField.setVarcharValue(varchar);
+                     if(status.equals("edge")){currentDTField.setVarcharValue(varchar);}
+                     else if(status.equals("xmk")){xmlCurrentDTField.setVarcharValue(varchar);}
                   } else {
                      JOptionPane.showMessageDialog(null, "Varchar length must be greater than 0 and less than or equal to 65535.");
                      jtfDTVarchar.setText(Integer.toString(EdgeField.VARCHAR_DEFAULT_LENGTH));
