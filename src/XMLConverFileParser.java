@@ -31,8 +31,16 @@ public class XMLConverFileParser {
    private File parseFile;
    private FileReader fr;
    private BufferedReader br;
-   private String currentLine;
+   private ArrayList <XmlTable> alTables, alFields, alConnectors;
+   private XmlTable[] tables;
   
+   public XMLConverFileParser(File constructorFile) {
+      alTables = new ArrayList<XmlTable>();
+      alFields = new ArrayList();
+      alConnectors = new ArrayList();
+      parseFile = constructorFile;
+      this.openFile(parseFile);
+   }
     
     public void openFile(File inputFile) {
       
@@ -58,7 +66,8 @@ public class XMLConverFileParser {
                 System.out.println("---------------------------------");
                 Node nNode = nList.item(temp);
                 String tableName = nNode.getAttributes().getNamedItem("name").getNodeValue();
-                System.out.println("\nCurrent Table :" + tableName);
+                alTables.add(new XmlTable(tableName));
+                System.out.println("\nCurrent Table :" + alTables.get(temp).getName());
                 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 

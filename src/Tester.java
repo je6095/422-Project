@@ -14,11 +14,10 @@ import java.io.File;
 public class Tester {
     
     public static void main(String[] args) {
-        XMLConverFileParser xml = new XMLConverFileParser();
         
         File file = new File("testXml.xml");
         
-        xml.openFile(file);
+        XMLConverFileParser xml = new XMLConverFileParser(file);
     }
     
 }
