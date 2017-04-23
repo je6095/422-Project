@@ -265,7 +265,13 @@ public class EdgeConvertGUI {
                   }
                   if (jrbDataType[0].isSelected()) { //this is the Varchar radio button
                      jbDTVarchar.setEnabled(true); //enable the Varchar button
-                     jtfDTVarchar.setText(Integer.toString(currentDTField.getVarcharValue())); //fill text field with varcharValue
+                     if(status.equals("edge")){
+                        jtfDTVarchar.setText(Integer.toString(currentDTField.getVarcharValue())); //fill text field with varcharValue
+                     }
+                     
+                     else if(status.equals("xml")){
+                        jtfDTVarchar.setText(Integer.toString(xmlCurrentDTField.getVarcharValue())); //fill text field with varcharValue
+                     }
                   } else { //some radio button other than Varchar is selected
                      jtfDTVarchar.setText(""); //clear the text field
                      jbDTVarchar.setEnabled(false); //disable the button
@@ -373,7 +379,14 @@ public class EdgeConvertGUI {
       jcheckDTPrimaryKey.addItemListener(
          new ItemListener() {
             public void itemStateChanged(ItemEvent ie) {
-               currentDTField.setIsPrimaryKey(jcheckDTPrimaryKey.isSelected());
+                if(status.equals("edge")){
+                        currentDTField.setIsPrimaryKey(jcheckDTPrimaryKey.isSelected());
+                }
+                
+                else if(status.equals("xml")){
+                        xmlCurrentDTField.setIsPrimaryKey(jcheckDTPrimaryKey.isSelected());
+                }
+               
                dataSaved = false;
             }
          }
