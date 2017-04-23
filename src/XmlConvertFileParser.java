@@ -26,7 +26,7 @@ import org.w3c.dom.NodeList;
 public class XmlConvertFileParser {
     
    public static final String XML_ID = "XML File"; //first line of .edg files should be this
-   public static final String SAVE_ID = "EdgeConvert Save File"; //first line of save files should be this
+   public static final String SAVE_ID = "Xml Save File"; //first line of save files should be this
    
    private File parseFile;
    private FileReader fr;
@@ -92,18 +92,16 @@ public class XmlConvertFileParser {
                             int varcharVal = Integer.parseInt(fieldNode.getAttributes().getNamedItem("varchar_val").getNodeValue());
                             String primaryKey = fieldNode.getAttributes().getNamedItem("primary_key").getNodeValue();
                             boolean notNull = Boolean.parseBoolean(fieldNode.getAttributes().getNamedItem("not_null").getNodeValue());
-                            String unsigned = fieldNode.getAttributes().getNamedItem("unsigned").getNodeValue();
-                            String binary = fieldNode.getAttributes().getNamedItem("binary").getNodeValue();
-                            String autoIncrement = fieldNode.getAttributes().getNamedItem("auto_increment").getNodeValue();
-                            String generated = fieldNode.getAttributes().getNamedItem("primary_key").getNodeValue();
                             String defaultVal = fieldNode.getAttributes().getNamedItem("default").getNodeValue();
                             
-                            tempField = new XmlField(fieldName, fieldId);
+                            tempField = new XmlField(fieldName, fieldId, tableId);
                             tempField.setIsPrimaryKey(Boolean.parseBoolean(primaryKey));
                             tempField.setDataType(Integer.parseInt(datatype));
                             tempField.setDefaultValue(defaultVal);
                             tempField.setDisallowNull(notNull);
                             tempField.setVarcharValue(varcharVal);
+                            tempField.setTableID(tableId);
+                           
                             System.out.println(tempField.getIsPrimaryKey());
                             alFields.add(tempField);
                             xmlTable.addNativeField(fieldId);
@@ -113,10 +111,6 @@ public class XmlConvertFileParser {
                             System.out.println("\nDatatype :" + datatype);
                             System.out.println("\nPrimary Key :" + primaryKey);
                             System.out.println("\nNot Null :" + notNull);
-                            System.out.println("\nUnsigned :" + unsigned);
-                            System.out.println("\nBinary :" + binary);
-                            System.out.println("\nAuto Increment :" + autoIncrement);
-                            System.out.println("\nGenerated :" + generated);
                             System.out.println("\nDefault :" + defaultVal);
                             System.out.println("\nDefault :" + tableId);
                           }

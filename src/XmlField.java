@@ -19,10 +19,10 @@ public class XmlField {
    private static String[] strDataType = {"Varchar", "Boolean", "Integer", "Double"};
    public static final int VARCHAR_DEFAULT_LENGTH = 1;
    
-   public XmlField(String name, int id) {
+   public XmlField(String name, int id, int tableId) {
       this.name = name;
       numFigure = id;
-      tableID = 0;
+      this.tableID = tableID;
       tableBound = 0;
       fieldBound = 0;
       disallowNull = false;

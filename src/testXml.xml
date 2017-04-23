@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database name="testDb">
    <table id="1" name="music">
-      <field fieldId="1" tableId="1" name="musicId" datatype="2" varchar_val="0" primary_key="true" not_null="true" unsigned="false" binary="false" auto_increment="false" generated="false" default="" />
-      <field fieldId="2" tableId="1" name="musicName" datatype="0"  varchar_val="20" primary_key="false" not_null="false" unsigned="false" binary="false" auto_increment="false" generated="false" default="text example" />
+      <field fieldId="1" tableId="1" name="musicId" datatype="2" varchar_val="0" primary_key="true" not_null="true" default="" />
+      <field fieldId="2" tableId="1" name="musicName" datatype="0"  varchar_val="20" primary_key="false" not_null="false"  default="default music" />
    </table>
    <table id="2" name="sports">
-      <field fieldId="3" tableId="2" name="sportsId" datatype="2" varchar_val="0" primary_key="true" not_null="false" unsigned="false" binary="false" auto_increment="false" generated="false" default="" />
+      <field fieldId="3" tableId="2" name="sportsId" datatype="2" varchar_val="0" primary_key="true" not_null="false" default="" />
    </table>
 </database>

@@ -9,6 +9,15 @@ import javax.swing.filechooser.FileFilter;
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class EdgeConvertGUI {
    
@@ -1058,6 +1067,120 @@ public class EdgeConvertGUI {
          dataSaved = true;
       }
    }
+   
+   private void xmlSaveAs() {
+      int returnVal;
+      jfcXml.addChoosableFileFilter(effSave);
+      returnVal = jfcXml.showSaveDialog(null);
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+         saveFile = jfcXml.getSelectedFile();
+         if (saveFile.exists ()) {
+             int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+             if (response == JOptionPane.CANCEL_OPTION) {
+                return;
+             }
+         }
+         if (!saveFile.getName().endsWith("sav")) {
+            String temp = saveFile.getAbsolutePath() + ".sav";
+            saveFile = new File(temp);
+         }
+         jmiDTSave.setEnabled(true);
+         truncatedFilename = saveFile.getName().substring(saveFile.getName().lastIndexOf(File.separator) + 1);
+         jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
+         jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);
+      } else {
+         return;
+      }
+      xmlWriteSave();
+   }
+   
+   private void xmlWriteSave() {
+      if (saveFile != null) {
+         try {
+            File fXmlFile = saveFile;
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.newDocument();
+            
+            Element rootElement = doc.createElement("database");
+            Attr dbName = doc.createAttribute("dbName");
+            rootElement.setAttributeNode(dbName);
+            doc.appendChild(rootElement);
+            
+            //write the tables 
+            for (int i = 0; i < xmlTables.length; i++) {
+                Element tableElement = doc.createElement("table");
+               
+                Attr tableName = doc.createAttribute("name");
+                tableName.setValue(xmlTables[i].getName());
+		tableElement.setAttributeNode(tableName);
+                Attr tableId = doc.createAttribute("id");
+                tableId.setValue(Integer.toString(xmlTables[i].getNumFigure()));
+		tableElement.setAttributeNode(tableId);
+               rootElement.appendChild(tableElement);
+               
+               for (int j = 0; j < xmlFields.length; j++) {
+                   if(xmlFields[j].getTableID()== xmlTables[i].getNumFigure()){
+                       Element fieldElement = doc.createElement("field");
+                       
+                       Attr fName = doc.createAttribute("name");
+                       fName.setValue(xmlFields[j].getName());
+                       fieldElement.setAttributeNode(fName);
+                       
+                       Attr fieldId = doc.createAttribute("fieldId");
+                       fieldId.setValue(Integer.toString(xmlFields[j].getNumFigure()));
+                       fieldElement.setAttributeNode(fieldId);
+                       
+                       Attr fTableId = doc.createAttribute("tableId");
+                       fTableId.setValue(Integer.toString(xmlFields[j].getTableID()));
+                       fieldElement.setAttributeNode(fTableId);
+                       
+                       Attr fDatatype = doc.createAttribute("datatype");
+                       fDatatype.setValue(Integer.toString(xmlFields[j].getDataType()));
+                       fieldElement.setAttributeNode(fDatatype);
+                       
+                       Attr fVarcharVval = doc.createAttribute("varchar_val");
+                       fVarcharVval.setValue(Integer.toString(xmlFields[j].getVarcharValue()));
+                       fieldElement.setAttributeNode(fVarcharVval);
+                       
+                       Attr fPrimaryKey = doc.createAttribute("primary_key");
+                       fPrimaryKey.setValue(String.valueOf(xmlFields[j].getIsPrimaryKey()));
+                       fieldElement.setAttributeNode(fPrimaryKey);
+                       
+                       Attr fNotNull = doc.createAttribute("not_null");
+                       fNotNull.setValue(String.valueOf(xmlFields[j].getDisallowNull()));
+                       fieldElement.setAttributeNode(fNotNull);
+                       
+                       Attr fDefault = doc.createAttribute("default");
+                       fDefault.setValue(String.valueOf(xmlFields[j].getDefaultValue()));
+                       fieldElement.setAttributeNode(fDefault);
+                       
+                       tableElement.appendChild(fieldElement);
+                   }
+                }
+            }
+            
+            
+            
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(saveFile);
+                
+                transformer.transform(source, result);
+//            //write the fields
+//            pw.println("#Fields#");
+//            for (int i = 0; i < xmlFields.length; i++) {
+//               pw.println(xmlFields[i]);
+//            }
+            //close the file
+         } catch (Exception e) {
+            System.out.println(e);
+         }
+         dataSaved = true;
+      }
+   }
 
    private void setOutputDir() {
       int returnVal;
@@ -1438,9 +1561,11 @@ public class EdgeConvertGUI {
          if ((ae.getSource() == jmiDTSaveAs) || (ae.getSource() == jmiDRSaveAs) ||
              (ae.getSource() == jmiDTSave) || (ae.getSource() == jmiDRSave)) {
             if ((ae.getSource() == jmiDTSaveAs) || (ae.getSource() == jmiDRSaveAs)) {
-               saveAs();
+               if(status.equals("edge")){saveAs();}
+               else if(status.equals("xml")){xmlSaveAs();}
             } else {
-               writeSave();
+               if(status.equals("edge")){writeSave();}
+               if(status.equals("xml")){xmlWriteSave();}
             }
          }
          
@@ -1454,7 +1579,8 @@ public class EdgeConvertGUI {
                    null, null, null);
                if (answer == JOptionPane.YES_OPTION) {
                   if (saveFile == null) {
-                     saveAs();
+                     if(status.equals("edge")){saveAs();}
+                     else if(status.equals("xml")){xmlSaveAs();} 
                   }
                }
                if ((answer == JOptionPane.CANCEL_OPTION) || (answer == JOptionPane.CLOSED_OPTION)) {
