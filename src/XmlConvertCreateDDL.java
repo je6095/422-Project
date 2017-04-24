@@ -12,7 +12,7 @@
  */
 public abstract class XmlConvertCreateDDL {
    
-   static String[] products = {"XML MySQL"};
+   static String[] products = {"XML MySQL, XML Oracle"};
    protected XmlTable[] tables;
    protected XmlField[] fields; 
    protected int[] numBoundTables;
