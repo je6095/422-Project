@@ -83,7 +83,7 @@ public class EdgeConvertGUI {
    static JScrollPane jspDRTablesRelations, jspDRTablesRelatedTo, jspDRFieldsTablesRelations, jspDRFieldsTablesRelatedTo;
    static JMenuBar jmbDRMenuBar;
    static JMenu jmDRFile, jmDROptions, jmDRHelp;
-   static JMenuItem jmiDROpenEdge, jmiDROpenSave, jmiDRSave, jmiDRSaveAs, jmiDRExit, jmiDROptionsOutputLocation, jmiDROptionsShowProducts, jmiDRHelpAbout;
+   static JMenuItem jmiDROpenEdge, jmiDROpenXml, jmiDROpenSave, jmiDROpenSaveXml, jmiDRSave, jmiDRSaveAs, jmiDRExit, jmiDROptionsOutputLocation, jmiDROptionsShowProducts, jmiDRHelpAbout;
    
    public EdgeConvertGUI() {
       menuListener = new EdgeMenuListener();
@@ -147,8 +147,10 @@ public class EdgeConvertGUI {
       jmiDTExit.addActionListener(menuListener);
       jmDTFile.add(jmiDTOpenEdge);
       jmDTFile.add(jmiDTOpenXml); //refac
+      jmDTFile.addSeparator();
       jmDTFile.add(jmiDTOpenSave);
       jmDTFile.add(jmiDTOpenSaveXml);
+      jmDTFile.addSeparator();
       jmDTFile.add(jmiDTSave);
       jmDTFile.add(jmiDTSaveAs);
       jmDTFile.add(jmiDTExit);
@@ -591,6 +593,11 @@ public class EdgeConvertGUI {
       jmiDROpenSave = new JMenuItem("Open Save File");
       jmiDROpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDROpenSave.addActionListener(menuListener);
+      jmiDROpenXml = new JMenuItem("Open XML File");
+      jmiDROpenXml.setMnemonic(KeyEvent.VK_X);
+      jmiDROpenXml.addActionListener(menuListener);
+      jmiDROpenSaveXml = new JMenuItem("Open XMLSave File");
+      jmiDROpenSaveXml.addActionListener(menuListener);
       jmiDRSave = new JMenuItem("Save");
       jmiDRSave.setMnemonic(KeyEvent.VK_S);
       jmiDRSave.setEnabled(false);
@@ -603,7 +610,11 @@ public class EdgeConvertGUI {
       jmiDRExit.setMnemonic(KeyEvent.VK_X);
       jmiDRExit.addActionListener(menuListener);
       jmDRFile.add(jmiDROpenEdge);
+      jmDRFile.add(jmiDROpenXml);
+      jmDRFile.addSeparator();
       jmDRFile.add(jmiDROpenSave);
+      jmDRFile.add(jmiDROpenSaveXml);
+      jmDTFile.addSeparator();
       jmDRFile.add(jmiDRSave);
       jmDRFile.add(jmiDRSaveAs);
       jmDRFile.add(jmiDRExit);
@@ -644,9 +655,18 @@ public class EdgeConvertGUI {
                if (selIndex >= 0) {
                   String selText = dlmDRTablesRelations.getElementAt(selIndex).toString();
                   setCurrentDRTable1(selText);
-                  int[] currentNativeFields, currentRelatedTables, currentRelatedFields;
-                  currentNativeFields = currentDRTable1.getNativeFieldsArray();
-                  currentRelatedTables = currentDRTable1.getRelatedTablesArray();
+                  int[] currentNativeFields = null;
+                  int[]currentRelatedTables = null;
+                  int[] currentRelatedFields;
+                  if(status.equals("edge")){
+                      currentNativeFields = currentDRTable1.getNativeFieldsArray();
+                      currentRelatedTables = currentDRTable1.getRelatedTablesArray();
+                  }
+                  if(status.equals("xml")){
+                      currentNativeFields = xmlCurrentDRTable1.getNativeFieldsArray();
+                      currentRelatedTables = xmlCurrentDRTable1.getRelatedTablesArray();
+                  }
+                  
                   jlDRFieldsTablesRelations.clearSelection();
                   jlDRTablesRelatedTo.clearSelection();
                   jlDRFieldsTablesRelatedTo.clearSelection();
@@ -673,13 +693,28 @@ public class EdgeConvertGUI {
                if (selIndex >= 0) {
                   String selText = dlmDRFieldsTablesRelations.getElementAt(selIndex).toString();
                   setCurrentDRField1(selText);
-                  if (currentDRField1.getFieldBound() == 0) {
-                     jlDRTablesRelatedTo.clearSelection();
-                     jlDRFieldsTablesRelatedTo.clearSelection();
-                     dlmDRFieldsTablesRelatedTo.removeAllElements();
-                  } else {
-                     jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true);
-                     jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true);
+                  if(status.equals("edge")){
+                    if (currentDRField1.getFieldBound() == 0) {
+                       jlDRTablesRelatedTo.clearSelection();
+                       jlDRFieldsTablesRelatedTo.clearSelection();
+                       dlmDRFieldsTablesRelatedTo.removeAllElements();
+                    } else {
+                       jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true);
+                       jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true);
+                    }
+                  }
+                  
+                  if(status.equals("xml")){
+                      System.out.println("Hadasad");
+                      //System.out.println(xmlCurrentDRField1.getName());
+//                    if (xmlCurrentDRField1.getFieldBound() == 0) {
+//                       jlDRTablesRelatedTo.clearSelection();
+//                       jlDRFieldsTablesRelatedTo.clearSelection();
+//                       dlmDRFieldsTablesRelatedTo.removeAllElements();
+//                    } else {
+//                       jlDRTablesRelatedTo.setSelectedValue(getTableName(xmlCurrentDRField1.getTableBound()), true);
+//                       jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(xmlCurrentDRField1.getFieldBound()), true);
+//                    }
                   }
                }
             }
@@ -695,7 +730,9 @@ public class EdgeConvertGUI {
                if (selIndex >= 0) {
                   String selText = dlmDRTablesRelatedTo.getElementAt(selIndex).toString();
                   setCurrentDRTable2(selText);
-                  int[] currentNativeFields = currentDRTable2.getNativeFieldsArray();
+                  int[] currentNativeFields = null;
+                  if(status.equals("edge")){currentNativeFields = currentDRTable2.getNativeFieldsArray();}
+                  if(status.equals("xml")){currentNativeFields = xmlCurrentDRTable2.getNativeFieldsArray();}
                   dlmDRFieldsTablesRelatedTo.removeAllElements();
                   for (int fIndex = 0; fIndex < currentNativeFields.length; fIndex++) {
                      dlmDRFieldsTablesRelatedTo.addElement(getFieldName(currentNativeFields[fIndex]));
@@ -753,7 +790,8 @@ public class EdgeConvertGUI {
                jfDR.setVisible(false);
                clearDRControls();
                depopulateLists();
-               populateLists();
+               if(status.equals("edge")){populateLists();}
+               if(status.equals("xml")){populateXmlLists();}
             }
          }
       );
@@ -873,58 +911,124 @@ public class EdgeConvertGUI {
    }
 
    private void setCurrentDRTable1(String selText) {
-      for (int tIndex = 0; tIndex < tables.length; tIndex++) {
-         if (selText.equals(tables[tIndex].getName())) {
-            currentDRTable1 = tables[tIndex];
-            return;
-         }
-      }
+       if(status.equals("edge")){  
+            for (int tIndex = 0; tIndex < tables.length; tIndex++) {
+                if (selText.equals(tables[tIndex].getName())) {
+                currentDRTable1 = tables[tIndex];
+                return;
+                }
+            }
+       }
+       else if(status.equals("xml")){  
+            for (int tIndex = 0; tIndex < xmlTables.length; tIndex++) {
+                if (selText.equals(xmlTables[tIndex].getName())) {
+                xmlCurrentDRTable1 = xmlTables[tIndex];
+                return;
+                }
+            }
+       }
    }
 
    private void setCurrentDRTable2(String selText) {
-      for (int tIndex = 0; tIndex < tables.length; tIndex++) {
-         if (selText.equals(tables[tIndex].getName())) {
-            currentDRTable2 = tables[tIndex];
-            return;
-         }
-      }
+       if(status.equals("edge")){  
+            for (int tIndex = 0; tIndex < tables.length; tIndex++) {
+               if (selText.equals(tables[tIndex].getName())) {
+                  currentDRTable2 = tables[tIndex];
+                  return;
+               }
+            }
+       }
+       
+       if(status.equals("xml")){  
+            for (int tIndex = 0; tIndex < xmlTables.length; tIndex++) {
+               if (selText.equals(xmlTables[tIndex].getName())) {
+                  xmlCurrentDRTable2 = xmlTables[tIndex];
+                  return;
+               }
+            }
+       }
    }
 
    private void setCurrentDRField1(String selText) {
-      for (int fIndex = 0; fIndex < fields.length; fIndex++) {
-         if (selText.equals(fields[fIndex].getName()) &&
-             fields[fIndex].getTableID() == currentDRTable1.getNumFigure()) {
-            currentDRField1 = fields[fIndex];
-            return;
-         }
-      }
+       if(status.equals("edge")){  
+            for (int fIndex = 0; fIndex < fields.length; fIndex++) {
+               if (selText.equals(fields[fIndex].getName()) &&
+                   fields[fIndex].getTableID() == currentDRTable1.getNumFigure()) {
+                  currentDRField1 = fields[fIndex];
+                  return;
+               }
+            }
+       }
+       
+       if(status.equals("xml")){  
+            for (int fIndex = 0; fIndex < xmlFields.length; fIndex++) {
+               if (selText.equals(xmlFields[fIndex].getName()) && xmlFields[fIndex].getTableID() == xmlCurrentDRTable1.getNumFigure()) {
+                  xmlCurrentDRField1 = xmlFields[fIndex];
+                  return;
+               }
+            }
+       }
    }
 
    private void setCurrentDRField2(String selText) {
-      for (int fIndex = 0; fIndex < fields.length; fIndex++) {
-         if (selText.equals(fields[fIndex].getName()) &&
-             fields[fIndex].getTableID() == currentDRTable2.getNumFigure()) {
-            currentDRField2 = fields[fIndex];
-            return;
-         }
-      }
+       if(status.equals("edge")){  
+            for (int fIndex = 0; fIndex < fields.length; fIndex++) {
+               if (selText.equals(fields[fIndex].getName()) &&
+                   fields[fIndex].getTableID() == currentDRTable2.getNumFigure()) {
+                  currentDRField2 = fields[fIndex];
+                  return;
+               }
+            }
+       }
+       
+       if(status.equals("xml")){  
+            for (int fIndex = 0; fIndex < xmlFields.length; fIndex++) {
+               if (selText.equals(xmlFields[fIndex].getName()) &&
+                   xmlFields[fIndex].getTableID() == xmlCurrentDRTable2.getNumFigure()) {
+                  xmlCurrentDRField2 = xmlFields[fIndex];
+                  return;
+               }
+            }
+       }
    }
    
    private String getTableName(int numFigure) {
-      for (int tIndex = 0; tIndex < tables.length; tIndex++) {
-         if (tables[tIndex].getNumFigure() == numFigure) {
-            return tables[tIndex].getName();
-         }
-      }
+       if(status.equals("edge")){  
+            for (int tIndex = 0; tIndex < tables.length; tIndex++) {
+               if (tables[tIndex].getNumFigure() == numFigure) {
+                  return tables[tIndex].getName();
+               }
+            }
+       }
+       
+       if(status.equals("xml")){  
+            for (int tIndex = 0; tIndex < xmlTables.length; tIndex++) {
+               if (xmlTables[tIndex].getNumFigure() == numFigure) {
+                  return xmlTables[tIndex].getName();
+               }
+            }
+       }
       return "";
    }
    
    private String getFieldName(int numFigure) {
-      for (int fIndex = 0; fIndex < fields.length; fIndex++) {
-         if (fields[fIndex].getNumFigure() == numFigure) {
-            return fields[fIndex].getName();
-         }
-      }
+       if(status.equals("edge")){  
+            for (int fIndex = 0; fIndex < fields.length; fIndex++) {
+               if (fields[fIndex].getNumFigure() == numFigure) {
+                  return fields[fIndex].getName();
+               }
+            }
+            
+       }
+       
+       if(status.equals("xml")){  
+            for (int fIndex = 0; fIndex < xmlFields.length; fIndex++) {
+               if (xmlFields[fIndex].getNumFigure() == numFigure) {
+                  return xmlFields[fIndex].getName();
+               }
+            }
+            
+       }
       return "";
    }
    
@@ -1010,7 +1114,10 @@ public class EdgeConvertGUI {
          for (int tIndex = 0; tIndex < xmlTables.length; tIndex++) {
             String tempName = xmlTables[tIndex].getName();
             dlmDTTablesAll.addElement(tempName);
-            
+            int[] relatedTables = xmlTables[tIndex].getRelatedTablesArray();
+                if (relatedTables.length > 0) {
+                   dlmDRTablesRelations.addElement(tempName);
+                }
          }
       }
       readSuccess = true;

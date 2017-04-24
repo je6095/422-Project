@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.*;
 
 public abstract class EdgeConvertCreateDDL {
-   static String[] products = {"MySQL"};
+   static String[] products = {"MySQL, Oracle"};
    protected EdgeTable[] tables; //master copy of EdgeTable objects
    protected EdgeField[] fields; //master copy of EdgeField objects
    protected int[] numBoundTables;

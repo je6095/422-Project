@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database name="testDb">
-   <table id="1" name="music">
-      <field fieldId="1" tableId="1" name="musicId" datatype="2" varchar_val="0" primary_key="true" not_null="true" default="" />
-      <field fieldId="2" tableId="1" name="musicName" datatype="0"  varchar_val="20" primary_key="false" not_null="false"  default="default music" />
+   <table id="1000" name="music">
+      <field fieldId="1" tableId="1" name="musicId" datatype="2" varchar_val="0" primary_key="true" not_null="true" default=""  relationship="1"/>
+      <field fieldId="2" tableId="1" name="musicName" datatype="0"  varchar_val="20" primary_key="false" not_null="false"  default="default music" relationship="" />
    </table>
-   <table id="2" name="sports">
-      <field fieldId="3" tableId="2" name="sportsId" datatype="2" varchar_val="0" primary_key="true" not_null="false" default="" />
+   <table id="2000" name="sports">
+      <field fieldId="3" tableId="2" name="sportsId" datatype="2" varchar_val="0" primary_key="true" not_null="false" default="" relationship="" />
    </table>
+
+   <relations>
+   		<relationship relationId="1" table1="1000" field1="2" table2="2000" field2="3" rel1="single" rel2="" />
+   </relations>
 </database>
