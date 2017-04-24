@@ -7,7 +7,7 @@
 
 /**
  *
- * @author Hypemaster
+ * @author Hassan Jegan Ndow
  */
 public class XmlConnector {
     private int numConnector, endPoint1, endPoint2;
