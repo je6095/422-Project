@@ -10,7 +10,7 @@
  *
  * @author Hassan Jegan Ndow
  */
-public abstract class XmlConvertCreateDDL {
+public abstract class XmlConvertCreateDDL extends ConvertCreateDDL{
    
    static String[] products = {"XML MySQL, XML Oracle"};
    protected XmlTable[] tables;

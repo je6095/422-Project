@@ -6,6 +6,11 @@ import javax.swing.event.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ *
+ * @author Hassan Jegan Ndow
+ */
+
 public class XmlCreateDDLMySQL extends XmlConvertCreateDDL {
 
    protected String databaseName;

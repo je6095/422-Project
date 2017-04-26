@@ -7,7 +7,7 @@ import javax.swing.event.*;
 import java.io.*;
 import java.util.*;
 
-public abstract class EdgeConvertCreateDDL {
+public abstract class EdgeConvertCreateDDL extends ConvertCreateDDL{
    static String[] products = {"MySQL, Oracle"};
    protected EdgeTable[] tables; //master copy of EdgeTable objects
    protected EdgeField[] fields; //master copy of EdgeField objects
