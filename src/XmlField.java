@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
  *
  * @author Hassan Jegan Ndow
  */
-public class XmlField {
+public class XmlField extends Field{
    private int numFigure;
    private int tableID, tableBound, fieldBound, dataType, varcharValue;
    private String name, defaultValue;

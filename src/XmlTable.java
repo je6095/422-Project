@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  * @author Hassan Jegan Ndow
  */
-public class XmlTable {
+public class XmlTable extends Table {
     
     private String name;
     private int numFigure;

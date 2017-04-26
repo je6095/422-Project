@@ -2,7 +2,7 @@
 
 import java.util.StringTokenizer;
 
-public class EdgeField {
+public class EdgeField extends Field{
    private int numFigure, tableID, tableBound, fieldBound, dataType, varcharValue;
    private String name, defaultValue;
    private boolean disallowNull, isPrimaryKey;

@@ -2,7 +2,7 @@
 
 import java.util.*;
 
-public class EdgeTable {
+public class EdgeTable extends Table{
    private int numFigure;
    private String name;
    private ArrayList alRelatedTables, alNativeFields;
