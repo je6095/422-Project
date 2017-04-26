@@ -2,9 +2,11 @@
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
-public class EdgeConvertFileParser {
+public class EdgeConvertFileParser extends ConvertFileParser{
    //private String filename = "test.edg";
    private File parseFile;
    private FileReader fr;
@@ -41,7 +43,7 @@ public class EdgeConvertFileParser {
       this.openFile(parseFile);
    }
 
-   public void parseEdgeFile() throws IOException {
+   public void parseFile() throws Exception {
       while ((currentLine = br.readLine()) != null) {
          currentLine = currentLine.trim();
          if (currentLine.startsWith("Figure ")) { //this is the start of a Figure entry
@@ -128,9 +130,9 @@ public class EdgeConvertFileParser {
             alConnectors.add(new EdgeConnector(numConnector + DELIM + endPoint1 + DELIM + endPoint2 + DELIM + endStyle1 + DELIM + endStyle2));
          } // if("Connector")
       } // while()
-   } // parseEdgeFile()
+   } // parseFile()
    
-   private void resolveConnectors() { //Identify nature of Connector endpoints
+   protected void resolveConnectors() { //Identify nature of Connector endpoints
       int endPoint1, endPoint2;
       int fieldIndex = 0, table1Index = 0, table2Index = 0;
       for (int cIndex = 0; cIndex < connectors.length; cIndex++) {
@@ -253,7 +255,7 @@ public class EdgeConvertFileParser {
       }
    } // parseSaveFile()
 
-   private void makeArrays() { //convert ArrayList objects into arrays of the appropriate Class type
+   protected void makeArrays() { //convert ArrayList objects into arrays of the appropriate Class type
       if (alTables != null) {
          tables = (EdgeTable[])alTables.toArray(new EdgeTable[alTables.size()]);
       }
@@ -265,7 +267,7 @@ public class EdgeConvertFileParser {
       }
    }
    
-   private boolean isTableDup(String testTableName) {
+   protected boolean isTableDup(String testTableName) {
       for (int i = 0; i < alTables.size(); i++) {
          EdgeTable tempTable = (EdgeTable)alTables.get(i);
          if (tempTable.getName().equals(testTableName)) {
@@ -291,7 +293,7 @@ public class EdgeConvertFileParser {
          currentLine = br.readLine().trim();
          numLine++;
          if (currentLine.startsWith(EDGE_ID)) { //the file chosen is an Edge Diagrammer file
-            this.parseEdgeFile(); //parse the file
+            this.parseFile(); //parse the file
             br.close();
             this.makeArrays(); //convert ArrayList objects into arrays of the appropriate Class type
             this.resolveConnectors(); //Identify nature of Connector endpoints
@@ -304,7 +306,7 @@ public class EdgeConvertFileParser {
                JOptionPane.showMessageDialog(null, "Unrecognized file format");
             }
          }
-      } // try
+      } // try // try
       catch (FileNotFoundException fnfe) {
          System.out.println("Cannot find \"" + inputFile.getName() + "\".");
          System.exit(0);
@@ -312,6 +314,8 @@ public class EdgeConvertFileParser {
       catch (IOException ioe) {
          System.out.println(ioe);
          System.exit(0);
-      } // catch IOException
+      } catch (Exception ex) {
+           Logger.getLogger(EdgeConvertFileParser.class.getName()).log(Level.SEVERE, null, ex);
+       } // catch IOException
    } // openFile()
 } // EdgeConvertFileHandler

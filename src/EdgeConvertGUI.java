@@ -1629,11 +1629,11 @@ public class EdgeConvertGUI {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcXml.getSelectedFile();
                xcfp = new XmlConvertFileParser(parseFile);
-               xmlTables = xcfp.getEdgeTables();
+               xmlTables = xcfp.getXmlTables();
                for (int i = 0; i < xmlTables.length; i++) {
                   xmlTables[i].makeArrays();
                }
-               xmlFields = xcfp.getEdgeFields();
+               xmlFields = xcfp.getXmlFields();
                xcfp = null;
                populateXmlLists();
                saveFile = null;
@@ -1671,8 +1671,8 @@ public class EdgeConvertGUI {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                saveFile = jfcXml.getSelectedFile();
                xcfp = new XmlConvertFileParser(saveFile);
-               xmlTables = xcfp.getEdgeTables();
-               xmlFields = xcfp.getEdgeFields();
+               xmlTables = xcfp.getXmlTables();
+               xmlFields = xcfp.getXmlFields();
                for (int i = 0; i < xmlTables.length; i++) {
                   xmlTables[i].makeArrays();
                }

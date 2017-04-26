@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,7 +25,7 @@ import org.w3c.dom.NodeList;
  *
  * @author Hassan Jegan Ndow
  */
-public class XmlConvertFileParser {
+public class XmlConvertFileParser extends ConvertFileParser{
     
    public static final String XML_ID = "XML File"; //first line of .edg files should be this
    public static final String SAVE_ID = "Xml Save File"; //first line of save files should be this
@@ -51,17 +53,21 @@ public class XmlConvertFileParser {
     
     public void openFile(File inputFile) {
       
-          parseXMLFile(inputFile);
-          this.makeArrays();
-          this.resolveConnectors();
-   } // openFile()
+       try {
+           this.parseFile();
+           this.makeArrays();
+           this.resolveConnectors();
+       } // openFile()
+       catch (Exception ex) {
+           Logger.getLogger(XmlConvertFileParser.class.getName()).log(Level.SEVERE, null, ex);
+       }
+   }
     
-    public void parseXMLFile(File inputFile){
-        try{
-            File fXmlFile = inputFile;
+    public void parseFile() throws Exception{
+        
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
+            Document doc = dBuilder.parse(parseFile);
            
             
             doc.getDocumentElement().normalize();
@@ -161,13 +167,10 @@ public class XmlConvertFileParser {
 		}
             }
             
-            
-        }catch (Exception e) {
-	e.printStackTrace();
-    }
+           
     }
     
-    private void makeArrays() { //convert ArrayList objects into arrays of the appropriate Class type
+    protected void makeArrays() { //convert ArrayList objects into arrays of the appropriate Class type
       if (alTables != null) {
          tables = (XmlTable[])alTables.toArray(new XmlTable[alTables.size()]);
       }
@@ -180,7 +183,7 @@ public class XmlConvertFileParser {
       }
    }
     
-    private void resolveConnectors() { //Identify nature of Connector endpoints
+    protected void resolveConnectors() { //Identify nature of Connector endpoints
       int endPoint1, endPoint2;
       int fieldIndex = 0, table1Index = 0, table2Index = 0;
       for (int cIndex = 0; cIndex < connectors.length; cIndex++) {
@@ -251,7 +254,7 @@ public class XmlConvertFileParser {
       } // connectors for() loop
    } // resolveConnectors()
     
-    private boolean isTableDup(String testTableName) {
+    protected boolean isTableDup(String testTableName) {
       for (int i = 0; i < alTables.size(); i++) {
          XmlTable tempTable = (XmlTable)alTables.get(i);
          if (tempTable.getName().equals(testTableName)) {
@@ -261,11 +264,11 @@ public class XmlConvertFileParser {
       return false;
    }
     
-    public XmlTable[] getEdgeTables() {
+    public XmlTable[] getXmlTables() {
       return tables;
    }
    
-   public XmlField[] getEdgeFields() {
+   public XmlField[] getXmlFields() {
       return fields;
    }
 }
