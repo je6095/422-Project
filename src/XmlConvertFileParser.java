@@ -60,6 +60,7 @@ public class XmlConvertFileParser extends ConvertFileParser{
       }
    }
    
+   //refac method
     private static String getFileExtension(File file) {
         String fileName = file.getName();
         if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
