@@ -48,8 +48,24 @@ public class XmlConvertFileParser extends ConvertFileParser{
       alFields = new ArrayList();
       alConnectors = new ArrayList();
       parseFile = constructorFile;
-      this.openFile(parseFile);
+      String status = EdgeConvertGUI.getStatus();
+      System.out.println("The status is: " + status);
+      if(getFileExtension(parseFile).equals("xml") || getFileExtension(parseFile).equals("sav") ){
+      
+          this.openFile(parseFile);
+      }   
+      
+      else {
+        JOptionPane.showMessageDialog(null, "Unrecognized file format");
+      }
    }
+   
+    private static String getFileExtension(File file) {
+        String fileName = file.getName();
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+        return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
+    }
     
     public void openFile(File inputFile) {
       
@@ -65,6 +81,7 @@ public class XmlConvertFileParser extends ConvertFileParser{
     
     public void parseFile() throws Exception{
         
+            
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(parseFile);

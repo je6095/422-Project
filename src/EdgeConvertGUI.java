@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 
 public class EdgeConvertGUI {
    
-   public String status; 
+   public static String status; 
    public static final int HORIZ_SIZE = 635;
    public static final int VERT_SIZE = 400;
    public static final int HORIZ_LOC = 100;
@@ -1581,7 +1581,7 @@ public class EdgeConvertGUI {
                   return;
                }
             }
-            status = "edge";
+             setStatus("edge");
             System.out.println(status);
             
             jfcEdge.addChoosableFileFilter(effEdge);
@@ -1624,7 +1624,7 @@ public class EdgeConvertGUI {
                }
             }
             
-            status = "xml";
+            setStatus("xml");
             System.out.println(status);
             jfcXml.addChoosableFileFilter(effXml);
             returnVal = jfcXml.showOpenDialog(null);
@@ -1666,7 +1666,7 @@ public class EdgeConvertGUI {
                }
             }
             
-            status = "xml";
+            setStatus("xml");
             System.out.println(status);
             jfcXml.addChoosableFileFilter(effSave);
             returnVal = jfcXml.showOpenDialog(null);
@@ -1707,7 +1707,7 @@ public class EdgeConvertGUI {
                   return;
                }
             }
-            status = "edge";
+            setStatus("edge");
             System.out.println(status);
             jfcEdge.addChoosableFileFilter(effSave);
             returnVal = jfcEdge.showOpenDialog(null);
@@ -1784,4 +1784,12 @@ public class EdgeConvertGUI {
          }
       } // EdgeMenuListener.actionPerformed()
    } // EdgeMenuListener
+   
+   public static String getStatus(){
+       return status;
+   }
+   
+   public void setStatus(String status){
+       this.status = status;
+   }
 } // EdgeConvertGUI
