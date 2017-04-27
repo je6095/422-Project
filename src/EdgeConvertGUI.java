@@ -1535,9 +1535,11 @@ public class EdgeConvertGUI {
                 null, null, null);
             if (answer == JOptionPane.YES_OPTION) {
                if (saveFile == null) {
-                  saveAs();
+                  if(status.equals("edge")){saveAs();}
+                  if(status.equals("xml")){xmlSaveAs();}
                }
-               writeSave();
+               if(status.equals("edge")){writeSave();}
+               if(status.equals("xml")){xmlWriteSave();}
             }
             if ((answer == JOptionPane.CANCEL_OPTION) || (answer == JOptionPane.CLOSED_OPTION)) {
                if (we.getSource() == jfDT) {
@@ -1613,7 +1615,7 @@ public class EdgeConvertGUI {
             dataSaved = true;
          }
          //feat
-         if ((ae.getSource() == jmiDTOpenXml)) {
+         if ((ae.getSource() == jmiDTOpenXml) || (ae.getSource() == jmiDROpenXml)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
                                                           "Are you sure?", JOptionPane.YES_NO_OPTION);
@@ -1655,7 +1657,7 @@ public class EdgeConvertGUI {
             dataSaved = true;
          }
          
-         if ((ae.getSource() == jmiDTOpenSaveXml)) {
+         if ((ae.getSource() == jmiDTOpenSaveXml) || (ae.getSource() == jmiDROpenSaveXml)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
                                                           "Are you sure?", JOptionPane.YES_NO_OPTION);
