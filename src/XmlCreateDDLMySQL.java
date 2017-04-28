@@ -36,6 +36,7 @@ public class XmlCreateDDLMySQL extends XmlConvertCreateDDL {
          for (int tableCount = 0; tableCount < numBoundTables.length; tableCount++) { //step through list of tables
                sb.append("CREATE TABLE " + tables[tableCount].getName() + " (\r\n");
                int[] nativeFields = tables[tableCount].getNativeFieldsArray();
+               int[] relatedFields = tables[tableCount].getRelatedFieldsArray();
                boolean[] primaryKey = new boolean[nativeFields.length];
                int numPrimaryKey = 0;
                int numForeignKey = 0;
@@ -80,6 +81,22 @@ public class XmlCreateDDLMySQL extends XmlConvertCreateDDL {
                   sb.append(")");
                   if (numForeignKey > 0) {
                      sb.append(",");
+                  }
+                  sb.append("\r\n");
+               }
+               
+               if (numForeignKey > 0) { //table has foreign keys
+                  int currentFK = 1;
+                  for (int i = 0; i < relatedFields.length; i++) {
+                     if (relatedFields[i] != 0) {
+                        sb.append("CONSTRAINT " + tables[tableCount].getName() + "_FK" + currentFK +
+                                  " FOREIGN KEY(" + getField(nativeFields[i]).getName() + ") REFERENCES " +
+                                  getTable(getField(nativeFields[i]).getTableBound()).getName() + "(" + getField(relatedFields[i]).getName() + ")");
+                        if (currentFK < numForeignKey) {
+                           sb.append(",\r\n");
+                        }
+                        currentFK++;
+                     }
                   }
                   sb.append("\r\n");
                }
