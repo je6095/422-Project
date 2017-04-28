@@ -706,15 +706,15 @@ public class EdgeConvertGUI {
                   
                   if(status.equals("xml")){
                       System.out.println("Hadasad");
-                      //System.out.println(xmlCurrentDRField1.getName());
-//                    if (xmlCurrentDRField1.getFieldBound() == 0) {
-//                       jlDRTablesRelatedTo.clearSelection();
-//                       jlDRFieldsTablesRelatedTo.clearSelection();
-//                       dlmDRFieldsTablesRelatedTo.removeAllElements();
-//                    } else {
-//                       jlDRTablesRelatedTo.setSelectedValue(getTableName(xmlCurrentDRField1.getTableBound()), true);
-//                       jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(xmlCurrentDRField1.getFieldBound()), true);
-//                    }
+                      System.out.println(xmlCurrentDRField1.getName());
+                    if (xmlCurrentDRField1.getFieldBound() == 0) {
+                       jlDRTablesRelatedTo.clearSelection();
+                       jlDRFieldsTablesRelatedTo.clearSelection();
+                       dlmDRFieldsTablesRelatedTo.removeAllElements();
+                    } else {
+                       jlDRTablesRelatedTo.setSelectedValue(getTableName(xmlCurrentDRField1.getTableBound()), true);
+                       jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(xmlCurrentDRField1.getFieldBound()), true);
+                    }
                   }
                }
             }
@@ -801,51 +801,101 @@ public class EdgeConvertGUI {
       jbDRBindRelation.addActionListener(
          new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
+                
                int nativeIndex = jlDRFieldsTablesRelations.getSelectedIndex();
-               int relatedField = currentDRField2.getNumFigure();
-               if (currentDRField1.getFieldBound() == relatedField) { //the selected fields are already bound to each other
-                  int answer = JOptionPane.showConfirmDialog(null, "Do you wish to unbind the relation on field " +
-                                                             currentDRField1.getName() + "?",
-                                                             "Are you sure?", JOptionPane.YES_NO_OPTION);
-                  if (answer == JOptionPane.YES_OPTION) {
-                     currentDRTable1.setRelatedField(nativeIndex, 0); //clear the related field
-                     currentDRField1.setTableBound(0); //clear the bound table
-                     currentDRField1.setFieldBound(0); //clear the bound field
-                     jlDRFieldsTablesRelatedTo.clearSelection(); //clear the listbox selection
-                  }
-                  return;
+               if (status.equals("edge")){
+                    int relatedField = currentDRField2.getNumFigure();
+                    if (currentDRField1.getFieldBound() == relatedField) { //the selected fields are already bound to each other
+                       int answer = JOptionPane.showConfirmDialog(null, "Do you wish to unbind the relation on field " +
+                                                                  currentDRField1.getName() + "?",
+                                                                  "Are you sure?", JOptionPane.YES_NO_OPTION);
+                       if (answer == JOptionPane.YES_OPTION) {
+                          currentDRTable1.setRelatedField(nativeIndex, 0); //clear the related field
+                          currentDRField1.setTableBound(0); //clear the bound table
+                          currentDRField1.setFieldBound(0); //clear the bound field
+                          jlDRFieldsTablesRelatedTo.clearSelection(); //clear the listbox selection
+                       }
+                       return;
+                    }
+                    if (currentDRField1.getFieldBound() != 0) { //field is already bound to a different field
+                       int answer = JOptionPane.showConfirmDialog(null, "There is already a relation defined on field " +
+                                                                  currentDRField1.getName() + ", do you wish to overwrite it?",
+                                                                  "Are you sure?", JOptionPane.YES_NO_OPTION);
+                       if (answer == JOptionPane.NO_OPTION || answer == JOptionPane.CLOSED_OPTION) {
+                          jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true); //revert selections to saved settings
+                          jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true); //revert selections to saved settings
+                          return;
+                       }
+                    }
+                    if (currentDRField1.getDataType() != currentDRField2.getDataType()) {
+                       JOptionPane.showMessageDialog(null, "The datatypes of " + currentDRTable1.getName() + "." +
+                                                     currentDRField1.getName() + " and " + currentDRTable2.getName() +
+                                                     "." + currentDRField2.getName() + " do not match.  Unable to bind this relation.");
+                       return;
+                    }
+                    if ((currentDRField1.getDataType() == 0) && (currentDRField2.getDataType() == 0)) {
+                       if (currentDRField1.getVarcharValue() != currentDRField2.getVarcharValue()) {
+                          JOptionPane.showMessageDialog(null, "The varchar lengths of " + currentDRTable1.getName() + "." +
+                                                        currentDRField1.getName() + " and " + currentDRTable2.getName() +
+                                                        "." + currentDRField2.getName() + " do not match.  Unable to bind this relation.");
+                          return;
+                       }
+                    }
+                    currentDRTable1.setRelatedField(nativeIndex, relatedField);
+                    currentDRField1.setTableBound(currentDRTable2.getNumFigure());
+                    currentDRField1.setFieldBound(currentDRField2.getNumFigure());
+                    JOptionPane.showMessageDialog(null, "Table " + currentDRTable1.getName() + ": native field " +
+                                                  currentDRField1.getName() + " bound to table " + currentDRTable2.getName() +
+                                                  " on field " + currentDRField2.getName());
+                    dataSaved = false;
                }
-               if (currentDRField1.getFieldBound() != 0) { //field is already bound to a different field
-                  int answer = JOptionPane.showConfirmDialog(null, "There is already a relation defined on field " +
-                                                             currentDRField1.getName() + ", do you wish to overwrite it?",
-                                                             "Are you sure?", JOptionPane.YES_NO_OPTION);
-                  if (answer == JOptionPane.NO_OPTION || answer == JOptionPane.CLOSED_OPTION) {
-                     jlDRTablesRelatedTo.setSelectedValue(getTableName(currentDRField1.getTableBound()), true); //revert selections to saved settings
-                     jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(currentDRField1.getFieldBound()), true); //revert selections to saved settings
-                     return;
-                  }
+               
+               if (status.equals("xml")){
+                    int relatedField = xmlCurrentDRField2.getNumFigure();
+                    if (xmlCurrentDRField1.getFieldBound() == relatedField) { //the selected fields are already bound to each other
+                       int answer = JOptionPane.showConfirmDialog(null, "Do you wish to unbind the relation on field " +
+                                                                  xmlCurrentDRField1.getName() + "?",
+                                                                  "Are you sure?", JOptionPane.YES_NO_OPTION);
+                       if (answer == JOptionPane.YES_OPTION) {
+                          xmlCurrentDRTable1.setRelatedField(nativeIndex, 0); //clear the related field
+                          xmlCurrentDRField1.setTableBound(0); //clear the bound table
+                          xmlCurrentDRField1.setFieldBound(0); //clear the bound field
+                          jlDRFieldsTablesRelatedTo.clearSelection(); //clear the listbox selection
+                       }
+                       return;
+                    }
+                    if (xmlCurrentDRField1.getFieldBound() != 0) { //field is already bound to a different field
+                       int answer = JOptionPane.showConfirmDialog(null, "There is already a relation defined on field " +
+                                                                  xmlCurrentDRField1.getName() + ", do you wish to overwrite it?",
+                                                                  "Are you sure?", JOptionPane.YES_NO_OPTION);
+                       if (answer == JOptionPane.NO_OPTION || answer == JOptionPane.CLOSED_OPTION) {
+                          jlDRTablesRelatedTo.setSelectedValue(getTableName(xmlCurrentDRField1.getTableBound()), true); //revert selections to saved settings
+                          jlDRFieldsTablesRelatedTo.setSelectedValue(getFieldName(xmlCurrentDRField1.getFieldBound()), true); //revert selections to saved settings
+                          return;
+                       }
+                    }
+                    if (xmlCurrentDRField1.getDataType() != xmlCurrentDRField2.getDataType()) {
+                       JOptionPane.showMessageDialog(null, "The datatypes of " + xmlCurrentDRTable1.getName() + "." +
+                                                     xmlCurrentDRField1.getName() + " and " + xmlCurrentDRTable2.getName() +
+                                                     "." + xmlCurrentDRField2.getName() + " do not match.  Unable to bind this relation.");
+                       return;
+                    }
+                    if ((xmlCurrentDRField1.getDataType() == 0) && (xmlCurrentDRField2.getDataType() == 0)) {
+                       if (xmlCurrentDRField1.getVarcharValue() != xmlCurrentDRField2.getVarcharValue()) {
+                          JOptionPane.showMessageDialog(null, "The varchar lengths of " + xmlCurrentDRTable1.getName() + "." +
+                                                        xmlCurrentDRField1.getName() + " and " + xmlCurrentDRTable2.getName() +
+                                                        "." + xmlCurrentDRField2.getName() + " do not match.  Unable to bind this relation.");
+                          return;
+                       }
+                    }
+                    xmlCurrentDRTable1.setRelatedField(nativeIndex, relatedField);
+                    xmlCurrentDRField1.setTableBound(xmlCurrentDRTable2.getNumFigure());
+                    xmlCurrentDRField1.setFieldBound(xmlCurrentDRField2.getNumFigure());
+                    JOptionPane.showMessageDialog(null, "Table " + xmlCurrentDRTable1.getName() + ": native field " +
+                                                  xmlCurrentDRField1.getName() + " bound to table " + xmlCurrentDRTable2.getName() +
+                                                  " on field " + xmlCurrentDRField2.getName());
+                    dataSaved = false;
                }
-               if (currentDRField1.getDataType() != currentDRField2.getDataType()) {
-                  JOptionPane.showMessageDialog(null, "The datatypes of " + currentDRTable1.getName() + "." +
-                                                currentDRField1.getName() + " and " + currentDRTable2.getName() +
-                                                "." + currentDRField2.getName() + " do not match.  Unable to bind this relation.");
-                  return;
-               }
-               if ((currentDRField1.getDataType() == 0) && (currentDRField2.getDataType() == 0)) {
-                  if (currentDRField1.getVarcharValue() != currentDRField2.getVarcharValue()) {
-                     JOptionPane.showMessageDialog(null, "The varchar lengths of " + currentDRTable1.getName() + "." +
-                                                   currentDRField1.getName() + " and " + currentDRTable2.getName() +
-                                                   "." + currentDRField2.getName() + " do not match.  Unable to bind this relation.");
-                     return;
-                  }
-               }
-               currentDRTable1.setRelatedField(nativeIndex, relatedField);
-               currentDRField1.setTableBound(currentDRTable2.getNumFigure());
-               currentDRField1.setFieldBound(currentDRField2.getNumFigure());
-               JOptionPane.showMessageDialog(null, "Table " + currentDRTable1.getName() + ": native field " +
-                                             currentDRField1.getName() + " bound to table " + currentDRTable2.getName() +
-                                             " on field " + currentDRField2.getName());
-               dataSaved = false;
             }
          }
       );
