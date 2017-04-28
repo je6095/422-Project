@@ -1268,14 +1268,15 @@ public class EdgeConvertGUI {
             //write the tables 
             for (int i = 0; i < xmlTables.length; i++) {
                 Element tableElement = doc.createElement("table");
-               
+                Element relationsElement = doc.createElement("relations");
                 Attr tableName = doc.createAttribute("name");
                 tableName.setValue(xmlTables[i].getName());
 		tableElement.setAttributeNode(tableName);
                 Attr tableId = doc.createAttribute("id");
                 tableId.setValue(Integer.toString(xmlTables[i].getNumFigure()));
 		tableElement.setAttributeNode(tableId);
-               rootElement.appendChild(tableElement);
+                rootElement.appendChild(tableElement);
+                //rootElement.appendChild(relationsElement);
                
                for (int j = 0; j < xmlFields.length; j++) {
                    if(xmlFields[j].getTableID()== xmlTables[i].getNumFigure()){
@@ -1314,6 +1315,20 @@ public class EdgeConvertGUI {
                        fieldElement.setAttributeNode(fDefault);
                        
                        tableElement.appendChild(fieldElement);
+                       
+                       if(xmlFields[j].getFieldBound() !=0){
+                            Element relationshipElement = doc.createElement("relationship");
+                            
+//                            Attr rId = doc.createAttribute("relationId");
+//                            rId.setValue("1");
+//                            relationshipElement.setAttributeNode(rId);
+//                            
+//                            Attr rTable2 = doc.createAttribute("table2");
+//                            fNotNull.setValue(String.valueOf(xmlFields[j].getTableBound()));
+//                            relationshipElement.setAttributeNode(rTable2);
+                            
+                            
+                       }
                    }
                 }
             }
@@ -1790,6 +1805,7 @@ public class EdgeConvertGUI {
          if ((ae.getSource() == jmiDTSaveAs) || (ae.getSource() == jmiDRSaveAs) ||
              (ae.getSource() == jmiDTSave) || (ae.getSource() == jmiDRSave)) {
             if ((ae.getSource() == jmiDTSaveAs) || (ae.getSource() == jmiDRSaveAs)) {
+                System.out.println("Save as status: " + status);
                if(status.equals("edge")){saveAs();}
                else if(status.equals("xml")){xmlSaveAs();}
             } else {

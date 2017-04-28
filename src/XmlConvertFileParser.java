@@ -163,6 +163,8 @@ public class XmlConvertFileParser extends ConvertFileParser{
                             tempField.setTableID(tableId);
                             tempField.setTableBound(0);
                             tempField.setFieldBound(0);
+                            
+                            
                            
                            
                             System.out.println(tempField.getIsPrimaryKey());
